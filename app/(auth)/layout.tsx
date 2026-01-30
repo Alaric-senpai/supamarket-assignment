@@ -5,7 +5,7 @@ import React from 'react'
 
 const AuthLayout = ({children}:{children:React.ReactNode}) => {
   return (
-    <div className='flex relative items-center justify-center p-6 md:p-10 bg-linear-to-br from-background via-secondary/5 to-background dark:from-slate-950 dark:via-slate-900/50 dark:to-slate-950 w-screen min-h-screen'>
+    <div className='flex relative items-start justify-center p-4 md:p-8 bg-gradient-to-br from-background via-secondary/5 to-background dark:from-slate-950 dark:via-slate-900/50 dark:to-slate-950 w-screen min-h-screen overflow-y-auto'>
       
       {/* Decorative gradient orbs */}
       <div className='absolute inset-0 overflow-hidden pointer-events-none'>
@@ -17,7 +17,7 @@ const AuthLayout = ({children}:{children:React.ReactNode}) => {
       <Button 
         asChild 
         variant="outline" 
-        className='absolute top-6 left-6 md:top-10 md:left-10 flex items-center gap-2 rounded-full shadow-lg hover:shadow-xl backdrop-blur-md bg-background/80 dark:bg-background/50 border-border/50 dark:border-primary/20 hover:bg-primary/10 dark:hover:bg-primary/20 hover:border-primary/30 transition-all duration-300 group z-10'
+        className='absolute top-4 left-4 md:top-8 md:left-8 flex items-center gap-2 rounded-full shadow-lg hover:shadow-xl backdrop-blur-md bg-background/80 dark:bg-background/50 border-border/50 dark:border-primary/20 hover:bg-primary/10 dark:hover:bg-primary/20 hover:border-primary/30 transition-all duration-300 group z-10'
       >
         <Link href={'/'}>
           <ArrowLeft className='size-4 group-hover:-translate-x-1 transition-transform' />
@@ -25,8 +25,8 @@ const AuthLayout = ({children}:{children:React.ReactNode}) => {
         </Link>
       </Button>
 
-      {/* Content with glass effect */}
-      <div className='relative z-10'>
+      {/* Content with no max-width constraints */}
+      <div className='relative z-10 w-full max-w-7xl mx-auto pt-16 md:pt-20'>
         {children}
       </div>
     </div>

@@ -15,18 +15,18 @@ export function LandingNavbar() {
             href="/" 
             className="flex items-center gap-2 font-bold tracking-tight transition-opacity hover:opacity-80"
           >
-            <span className="text-xl">Next Appwrite</span>
-            <span className="rounded-full bg-primary/10 px-2 py-0.5 text-xs font-medium text-primary">Starter</span>
+            <span className="text-xl">Supamarket</span>
+            {/* <span className="rounded-full bg-primary/10 px-2 py-0.5 text-xs font-medium text-primary">Starter</span> */}
           </Link>
 
           {/* Right Side Actions */}
           <div className="flex items-center gap-4">
-            <nav className="hidden md:flex items-center gap-6 text-sm font-medium text-muted-foreground mr-4">
+            {/* <nav className="hidden md:flex items-center gap-6 text-sm font-medium text-muted-foreground mr-4">
               <Link href="https://github.com/Alaric-senpai/nextjs-appwrite-starter" target="_blank" className="flex items-center gap-2 hover:text-foreground transition-colors">
                 <Github className="size-4" />
                 <span>GitHub</span>
               </Link>
-            </nav>
+            </nav> */}
 
             <div className="flex items-center gap-2">
               <AnimatedThemeToggler />

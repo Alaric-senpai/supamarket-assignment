@@ -1,30 +1,28 @@
+import { listUsers } from '@/actions/user.actions';
+import { UsersTable } from '@/components/admin/users-table';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Users } from 'lucide-react';
 
-export default function AdminUsers() {
+export default async function UsersPage() {
+  const users = await listUsers();
+
   return (
     <div className="space-y-6">
-      <div className="flex items-center gap-3">
-        <Users className="h-8 w-8" />
-        <div>
-          <h1 className="text-3xl font-bold">User Management</h1>
-          <p className="text-muted-foreground mt-1">
-            Manage all user accounts and permissions
-          </p>
-        </div>
+      <div>
+        <h1 className="text-3xl font-bold">Users</h1>
+        <p className="text-muted-foreground">
+          Manage system users and their roles
+        </p>
       </div>
 
       <Card>
         <CardHeader>
-          <CardTitle>User List</CardTitle>
+          <CardTitle>All Users</CardTitle>
           <CardDescription>
-            View and manage all registered users
+            View and manage registered users
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <p className="text-muted-foreground">
-            User management interface coming soon...
-          </p>
+          <UsersTable data={users} />
         </CardContent>
       </Card>
     </div>

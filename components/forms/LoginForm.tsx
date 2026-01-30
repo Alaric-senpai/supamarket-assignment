@@ -1,3 +1,5 @@
+// @ts-nocheck
+
 "use client"
 import * as z from "zod"
 import {  LoginformSchema } from '@/lib/form-schema'
@@ -15,6 +17,8 @@ import { SocialLogin } from "./SocialLogin"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
 import { useEffect } from "react"
+import { toast } from "sonner"
+import { logger } from "@/config/helpers"
 
 type Schema = z.infer<typeof LoginformSchema>;
 
@@ -29,20 +33,28 @@ const form = useForm<Schema>({
   }
 })
 const formAction = useAction(LoginserverAction, {
-  onSuccess: (data) => {
+  onSuccess: async(data) => {
     form.reset();
-    // Redirect to respective dashboard based on role
-    const role = data?.data?.role;
-    setTimeout(() => {
-      if (role === 'admin') {
-        router.push('/admin');
-      } else {
-        router.push('/dashboard');
-      }
-    }, 1500);
+    
+    // Access the nested role from data.data.data.role
+    const role = data?.data?.data?.role;
+
+    console.log(data)
+
+    logger.debug(role, 'role')
+    
+    console.log('Login successful, role:', role);
+    toast.success('Welcome back!');
+    
+    // Redirect based on role
+    if (role === 'admin') {
+      router.push('/admin');
+    } else if (role === "client") {
+      router.push('/dashboard');
+    }
   },
-  onError: () => {
-  // TODO: show error message
+  onError: (error) => {
+    toast.error(error.serverError || 'Invalid email or password');
   },
 });
 const handleSubmit = form.handleSubmit(async (data: Schema) => {
@@ -51,7 +63,8 @@ const handleSubmit = form.handleSubmit(async (data: Schema) => {
 
 const { isExecuting, hasSucceeded } = formAction;
   if (hasSucceeded) {
-    return (<div className="p-8 w-full max-w-md rounded-2xl border bg-card/50 backdrop-blur-sm shadow-xl dark:shadow-primary/5">
+    return (
+      <div className="w-full max-w-md mx-auto p-8 rounded-2xl border bg-card/50 backdrop-blur-sm shadow-xl dark:shadow-primary/5">
         <motion.div
           initial={{ opacity: 0, y: -16 }}
           animate={{ opacity: 1, y: 0 }}
@@ -81,7 +94,8 @@ const { isExecuting, hasSucceeded } = formAction;
             Redirecting to dashboard...
           </p>
         </motion.div>
-      </div>)
+      </div>
+    )
   }
 return (
       <form onSubmit={handleSubmit} className="p-6 sm:p-8 w-full max-w-md relative border bg-card/50 dark:bg-card/30 backdrop-blur-sm rounded-2xl shadow-xl dark:shadow-primary/10 mx-auto">
@@ -131,7 +145,7 @@ return (
             </Field>
         )} />
 
-<SocialLogin mode="login" />
+{/* <SocialLogin mode="login" /> */}
           </FieldGroup>
           
           <Button className="w-full h-11 rounded-lg shadow-lg bg-linear-to-r from-primary to-primary/90 hover:from-primary/90 hover:to-primary dark:shadow-primary/20 font-medium" type="submit" disabled={isExecuting}>

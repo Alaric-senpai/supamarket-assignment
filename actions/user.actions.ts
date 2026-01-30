@@ -3,7 +3,7 @@
 import { createAdminSession, createClientSession } from "@/server/clients";
 import { appwritecfg } from "@/config/appwrite.config";
 import { ID, Query } from "node-appwrite";
-import { UserRole } from "@/lib/utils";
+import type { Users, UsersRole } from '@/lib/types';
 
 /**
  * Create a user record in the database
@@ -51,7 +51,7 @@ export const getUserRole = async (userId: string) => {
             queries: [Query.equal("userId", userId)] // Assuming column name is 'userid' based on previous code
         });
 
-        return userDocs.rows[0]?.role as UserRole || "client";
+        return userDocs.rows[0]?.role as UsersRole || "client";
     } catch (error) {
         console.error("Failed to fetch user role:", error);
         return "client"; // Fallback
@@ -59,31 +59,22 @@ export const getUserRole = async (userId: string) => {
 }
 
 
-export const listAllUsers = async(limit:number=25, offset:number=0)=>{
+/**
+ * List all users
+ */
+export const listUsers = async (limit: number = 25, offset: number = 0) => {
     try {
-        
-        const {tables}= await createClientSession()
+        const { tables } = await createAdminSession();
 
-        const users = await tables.listRows({
+        const response = await tables.listRows({
             databaseId: appwritecfg.databaseId,
             tableId: appwritecfg.tables.users,
             queries: [Query.limit(limit), Query.offset(offset)]
-        })
+        });
 
-        if(users){
-            return {
-                success: true,
-                users:users.rows,
-                total: users.total
-            }
-        }
-        return {
-            success: false
-        }
-
+        return response.rows as unknown as Users[];
     } catch (error) {
-        return {
-            success: false,
-        }
+        console.error("Failed to list users:", error);
+        return [];
     }
 }

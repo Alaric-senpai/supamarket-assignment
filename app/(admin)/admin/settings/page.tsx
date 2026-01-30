@@ -1,32 +1,79 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Settings } from 'lucide-react';
+import { Label } from '@/components/ui/label';
+import { Input } from '@/components/ui/input';
+import { Button } from '@/components/ui/button';
+import { Separator } from '@/components/ui/separator';
 
-export default function AdminSettings() {
+export default function SettingsPage() {
   return (
     <div className="space-y-6">
-      <div className="flex items-center gap-3">
-        <Settings className="h-8 w-8" />
-        <div>
-          <h1 className="text-3xl font-bold">Admin Settings</h1>
-          <p className="text-muted-foreground mt-1">
-            Configure system settings and preferences
-          </p>
-        </div>
+      <div>
+        <h1 className="text-3xl font-bold">Settings</h1>
+        <p className="text-muted-foreground">
+          Manage application settings and preferences
+        </p>
       </div>
 
-      <Card>
-        <CardHeader>
-          <CardTitle>System Configuration</CardTitle>
-          <CardDescription>
-            Manage system-wide settings
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <p className="text-muted-foreground">
-            Admin settings interface coming soon...
-          </p>
-        </CardContent>
-      </Card>
+      <div className="grid gap-6">
+        <Card>
+          <CardHeader>
+            <CardTitle>General Settings</CardTitle>
+            <CardDescription>
+              Basic application configuration
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="space-y-2">
+              <Label htmlFor="app-name">Application Name</Label>
+              <Input id="app-name" defaultValue="Supamarket" />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="currency">Currency</Label>
+              <Input id="currency" defaultValue="KES" />
+            </div>
+            <Button>Save Changes</Button>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader>
+            <CardTitle>M-Pesa Configuration</CardTitle>
+            <CardDescription>
+              Mobile money payment settings
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="space-y-2">
+              <Label htmlFor="shortcode">Short Code</Label>
+              <Input id="shortcode" type="password" defaultValue="174379" />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="environment">Environment</Label>
+              <Input id="environment" defaultValue="sandbox" disabled />
+            </div>
+            <Button>Update M-Pesa Settings</Button>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader>
+            <CardTitle>Stock Alerts</CardTitle>
+            <CardDescription>
+              Configure low stock alert thresholds
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="space-y-2">
+              <Label htmlFor="low-stock">Low Stock Threshold</Label>
+              <Input id="low-stock" type="number" defaultValue="10" />
+              <p className="text-sm text-muted-foreground">
+                Alert when stock falls below this number
+              </p>
+            </div>
+            <Button>Save Alert Settings</Button>
+          </CardContent>
+        </Card>
+      </div>
     </div>
   );
 }

@@ -16,6 +16,7 @@ import { SocialLogin } from "./SocialLogin"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
 import { useEffect } from "react"
+import { toast } from "sonner"
 
 type Schema = z.infer<typeof RegisterformSchema>;
 
@@ -35,13 +36,14 @@ const form = useForm<Schema>({
 const formAction = useAction(RegisterserverAction, {
   onSuccess: (data) => {
     form.reset();
+    toast.success('Account created successfully!');
     // Redirect to login after 2 seconds
     setTimeout(() => {
       router.push('/login?registered=true');
     }, 2000);
   },
-  onError: () => {
-  // TODO: show error message
+  onError: (error) => {
+    toast.error(error.error.serverError || 'Failed to create account. Please try again.');
   },
 });
 const handleSubmit = form.handleSubmit(async (data: Schema) => {
@@ -50,7 +52,7 @@ const handleSubmit = form.handleSubmit(async (data: Schema) => {
 
 const { isExecuting, hasSucceeded, result } = formAction;
   if (hasSucceeded) {
-    return (<div className="p-8 w-full max-w-md rounded-2xl border bg-card/50 backdrop-blur-sm shadow-xl dark:shadow-primary/5">
+    return (<div className="p-8 w-full max-w-xl min-w-md rounded-2xl border bg-card/50 backdrop-blur-sm shadow-xl dark:shadow-primary/5">
         <motion.div
           initial={{ opacity: 0, y: -16 }}
           animate={{ opacity: 1, y: 0 }}
@@ -194,7 +196,7 @@ return (
           )}
         />
 
-<SocialLogin mode="signup" />
+{/* <SocialLogin mode="signup" /> */}
           </FieldGroup>
           
           <Button className="w-full h-11 rounded-lg shadow-lg bg-linear-to-r from-primary to-primary/90 hover:from-primary/90 hover:to-primary dark:shadow-primary/20 font-medium" type="submit" disabled={isExecuting}>

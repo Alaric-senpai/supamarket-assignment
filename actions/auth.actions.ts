@@ -2,15 +2,13 @@
 import { actionClient } from "./safe-action";
 import { RegisterformSchema, LoginformSchema } from "../lib/form-schema";
 import { createAdminSession, createClientSession } from "@/server/clients";
-import { ID, Query, Client, Account, OAuthProvider } from "node-appwrite";
+import { ID, Query, OAuthProvider } from "node-appwrite";
 import { appwritecfg } from "@/config/appwrite.config";
 import { setSessionCookie, setRoleCookie, deleteSessionCookie, deleteRoleCookie, getRoleCookie, getUserSessionCookie } from "@/server/cookies";
 import { createUserRecord, getUserRole } from "./user.actions";
 import { headers } from "next/headers";
-import { redirect } from "next/navigation";
 import * as z from "zod";
 import { UserRole } from "@/lib/utils";
-import { authConfig } from "@/config/app.config";
 
 export const RegisterserverAction = actionClient
   .inputSchema(RegisterformSchema)
@@ -406,7 +404,7 @@ export const extendSession = async () => {
     const { accounts } = await createClientSession();
     
     // Get current session
-    const currentSession = await accounts.getSession('current');
+    const currentSession = await accounts.getSession({ sessionId:'current'});
     
     if (!currentSession) {
       return {

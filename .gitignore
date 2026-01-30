@@ -39,3 +39,6 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+appwrite.config.json
+APPWRITE_SETUP.md
+/prompts/
