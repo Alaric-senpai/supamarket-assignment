@@ -1,5 +1,6 @@
 'use client';
 
+import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -25,8 +26,14 @@ export function OrderConfirmation({ order }: OrderConfirmationProps) {
   const router = useRouter();
   const { clearCart } = useCartStore();
 
+  // Clear cart on mount if order is already paid
+  useEffect(() => {
+    if (order.status === 'PAID') {
+      clearCart();
+    }
+  }, [order.status, clearCart]);
+
   const handleContinueShopping = () => {
-    clearCart();
     router.push('/dashboard/branches');
   };
 

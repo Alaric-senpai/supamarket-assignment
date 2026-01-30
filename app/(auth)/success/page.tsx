@@ -1,11 +1,12 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { Loader2, CheckCircle2 } from 'lucide-react';
 
-export default function OAuthSuccessPage() {
+function OAuthSuccessContent() {
   const router = useRouter();
+  // useSearchParams triggers prerendering error if not wrapped in Suspense
   const searchParams = useSearchParams();
   const [countdown, setCountdown] = useState(3);
 
@@ -25,20 +26,28 @@ export default function OAuthSuccessPage() {
   }, [router]);
 
   return (
-    <div className="flex min-h-screen items-center justify-center">
-      <div className="max-w-md w-full space-y-6 text-center p-6">
-        <div className="flex justify-center">
-          <CheckCircle2 className="w-16 h-16 text-green-500" />
-        </div>
-        <h1 className="text-2xl font-bold">Authentication Successful!</h1>
-        <p className="text-muted-foreground">
-          Your account has been authenticated successfully.
-        </p>
-        <div className="flex items-center justify-center gap-2 text-muted-foreground">
-          <Loader2 className="w-4 h-4 animate-spin" />
-          <span>Redirecting to dashboard in {countdown}s...</span>
-        </div>
+    <div className="max-w-md w-full space-y-6 text-center p-6">
+      <div className="flex justify-center">
+        <CheckCircle2 className="w-16 h-16 text-green-500" />
       </div>
+      <h1 className="text-2xl font-bold">Authentication Successful!</h1>
+      <p className="text-muted-foreground">
+        Your account has been authenticated successfully.
+      </p>
+      <div className="flex items-center justify-center gap-2 text-muted-foreground">
+        <Loader2 className="w-4 h-4 animate-spin" />
+        <span>Redirecting to dashboard in {countdown}s...</span>
+      </div>
+    </div>
+  );
+}
+
+export default function OAuthSuccessPage() {
+  return (
+    <div className="flex min-h-screen items-center justify-center">
+      <Suspense fallback={<Loader2 className="w-8 h-8 animate-spin text-muted-foreground" />}>
+        <OAuthSuccessContent />
+      </Suspense>
     </div>
   );
 }

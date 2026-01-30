@@ -1,12 +1,13 @@
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
+import { ROLE_COOKIE, SESSION_COOKIE } from './lib/utils';
 
 export async function proxy(request: NextRequest) {
     const { pathname } = request.nextUrl;
 
     // Get cookies
-    const sessionCookie = request.cookies.get('SESSION_COOKIE');
-    const roleCookie = request.cookies.get('ROLE_COOKIE');
+    const sessionCookie = request.cookies.get(SESSION_COOKIE);
+    const roleCookie = request.cookies.get(ROLE_COOKIE);
 
     const isLoggedIn = !!sessionCookie?.value;
     const userRole = roleCookie?.value;
@@ -50,12 +51,14 @@ export async function proxy(request: NextRequest) {
 export const config = {
     matcher: [
         /*
-         * Match all request paths except:
+         * Match all request paths except for the ones starting with:
+         * - api (API routes)
          * - _next/static (static files)
          * - _next/image (image optimization files)
          * - favicon.ico (favicon file)
-         * - public files (public folder)
+         * - manifest.json/manifest.webmanifest
+         * - static assets with common extensions
          */
-        '/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)',
+        '/((?!api|_next/static|_next/image|favicon.ico|manifest\\.(?:json|webmanifest)|.*\\.(?:svg|png|jpg|jpeg|gif|webp|ico|css|js|woff|woff2|ttf|otf|mp4|webm|wav|mp3|m4a|aac|oga)$).*)',
     ],
 };

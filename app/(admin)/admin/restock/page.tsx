@@ -1,11 +1,11 @@
-import { getNonHQBranches } from '@/actions/branches.actions';
+import { getBranches } from '@/actions/branches.actions';
 import { getProducts } from '@/actions/products.actions';
 import { RestockFormClient } from '@/components/admin/restock-form-client';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 
 export default async function RestockPage() {
   const [branches, products] = await Promise.all([
-    getNonHQBranches(),
+    getBranches(),
     getProducts(),
   ]);
 

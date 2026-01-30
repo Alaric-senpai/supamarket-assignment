@@ -27,8 +27,19 @@ import {
   SidebarMenuItem,
 } from '@/components/ui/sidebar';
 import { Button } from '@/components/ui/button';
+import { AnimatedThemeToggler } from '@/components/ui/animated-theme-toggler';
 
 const menuItems = [
+  {
+    title: 'Overview',
+    items: [
+      {
+        title: 'Dashboard',
+        url: '/dashboard',
+        icon: Home,
+      },
+    ],
+  },
   {
     title: 'Shopping',
     items: [
@@ -115,7 +126,11 @@ export function AppSidebar() {
         ))}
       </SidebarContent>
 
-      <SidebarFooter className="border-t p-4">
+      <SidebarFooter className="border-t p-4 space-y-2">
+        <div className="flex items-center justify-between gap-2">
+          <p className="text-xs text-muted-foreground font-medium px-2">Theme</p>
+          <AnimatedThemeToggler className="size-8 flex items-center justify-center rounded-md hover:bg-accent hover:text-accent-foreground transition-colors" />
+        </div>
         <LogoutButton />
       </SidebarFooter>
     </Sidebar>

@@ -14,7 +14,8 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { DataTable } from '@/components/ui/data-table';
 import type { Product } from '@/lib/types';
-import { ProductDialog } from './product-dialog';
+import { CreateProductDialog } from './create-product-dialog';
+import { EditProductDialog } from './edit-product-dialog';
 import { DeleteProductDialog } from './delete-product-dialog';
 
 interface ProductsManagementProps {
@@ -122,7 +123,7 @@ export function ProductsManagement({ initialProducts }: ProductsManagementProps)
       />
 
       {/* Dialogs */}
-      <ProductDialog
+      <CreateProductDialog
         open={isCreateOpen}
         onOpenChange={setIsCreateOpen}
         onSuccess={(newProduct) => {
@@ -131,7 +132,7 @@ export function ProductsManagement({ initialProducts }: ProductsManagementProps)
         }}
       />
 
-      <ProductDialog
+      <EditProductDialog
         open={isEditOpen}
         onOpenChange={setIsEditOpen}
         product={selectedProduct}

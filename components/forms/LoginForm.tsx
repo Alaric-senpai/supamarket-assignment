@@ -33,36 +33,38 @@ const form = useForm<Schema>({
   }
 })
 const formAction = useAction(LoginserverAction, {
-  onSuccess: async(data) => {
+  onSuccess: async({ data }) => {
+    if (!data?.success) {
+      toast.error(data?.message || 'Login failed');
+      return;
+    }
+
     form.reset();
     
-    // Access the nested role from data.data.data.role
-    const role = data?.data?.data?.role;
+    const role = data?.data?.role;
 
-    console.log(data)
-
-    logger.debug(role, 'role')
-    
     console.log('Login successful, role:', role);
     toast.success('Welcome back!');
     
     // Redirect based on role
     if (role === 'admin') {
       router.push('/admin');
-    } else if (role === "client") {
+    } else {
       router.push('/dashboard');
     }
   },
-  onError: (error) => {
-    toast.error(error.serverError || 'Invalid email or password');
+  onError: ({ error }) => {
+    toast.error(error.serverError || 'An error occurred during login');
   },
 });
 const handleSubmit = form.handleSubmit(async (data: Schema) => {
     formAction.execute(data);
   });
 
-const { isExecuting, hasSucceeded } = formAction;
-  if (hasSucceeded) {
+const { isExecuting, result } = formAction;
+  const hasSuccessfulLogin = result?.data?.success;
+
+  if (hasSuccessfulLogin) {
     return (
       <div className="w-full max-w-md mx-auto p-8 rounded-2xl border bg-card/50 backdrop-blur-sm shadow-xl dark:shadow-primary/5">
         <motion.div

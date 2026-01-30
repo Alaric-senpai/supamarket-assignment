@@ -27,7 +27,7 @@ const adminRoutes = [
 
 export async function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
-  
+
   // Allow public assets and API routes
   if (
     pathname.startsWith('/_next') ||
@@ -59,16 +59,16 @@ export async function proxy(request: NextRequest) {
     if (sessionSecret && authRoutes.some(route => pathname === route || pathname.startsWith(route))) {
       // Allow OAuth callback and status pages
       if (
-        pathname.includes('/oauth') || 
-        pathname.includes('/success') || 
+        pathname.includes('/oauth') ||
+        pathname.includes('/success') ||
         pathname.includes('/fail') ||
         pathname.includes('/verify')
       ) {
         return NextResponse.next();
       }
-      
+
       // Redirect to appropriate dashboard based on role
-      const dashboardUrl = userRole === 'admin' 
+      const dashboardUrl = userRole === 'admin'
         ? new URL('/admin', request.url)
         : new URL('/dashboard', request.url);
       return NextResponse.redirect(dashboardUrl);
@@ -84,7 +84,7 @@ export async function proxy(request: NextRequest) {
         url.searchParams.set('error', 'admin_access_denied');
         return NextResponse.redirect(url);
       }
-      
+
       // Additional verification happens in the layout server component
       // This double-check prevents cookie manipulation
     }
@@ -100,14 +100,14 @@ export async function proxy(request: NextRequest) {
     return response;
   } catch (error) {
     console.error('Middleware Error:', error);
-    
+
     // If error and trying to access protected route, redirect to login
     if (isProtectedRoute || isAdminRoute) {
       const url = new URL('/login', request.url);
       url.searchParams.set('error', 'session_error');
       return NextResponse.redirect(url);
     }
-    
+
     return NextResponse.next();
   }
 }
@@ -121,6 +121,6 @@ export const config = {
      * - favicon.ico (favicon file)
      * - public folder
      */
-    '/((?!_next/static|_next/image|favicon.ico|.*\\..*|public).*)',
+    '/((?!_next/static|_next/image|favicon.ico|manifest\\.(?:json|webmanifest)|.*\\.(?:svg|png|jpg|jpeg|gif|webp|ico|css|js|woff|woff2|ttf|otf|mp4|webm|wav|mp3|m4a|aac|oga)$).*)',
   ],
 };

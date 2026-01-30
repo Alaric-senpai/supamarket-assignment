@@ -1,10 +1,10 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { Loader2 } from 'lucide-react';
 
-export default function VerifySessionPage() {
+function VerifySessionContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const [status, setStatus] = useState<'verifying' | 'success' | 'error'>('verifying');
@@ -28,16 +28,24 @@ export default function VerifySessionPage() {
   }, [searchParams, router]);
 
   return (
-    <div className="flex min-h-screen items-center justify-center">
-      <div className="max-w-md w-full space-y-6 text-center p-6">
-        <div className="flex justify-center">
-          <Loader2 className="w-16 h-16 animate-spin text-primary" />
-        </div>
-        <h1 className="text-2xl font-bold">Verifying Your Session</h1>
-        <p className="text-muted-foreground">
-          Please wait while we complete your authentication...
-        </p>
+    <div className="max-w-md w-full space-y-6 text-center p-6">
+      <div className="flex justify-center">
+        <Loader2 className="w-16 h-16 animate-spin text-primary" />
       </div>
+      <h1 className="text-2xl font-bold">Verifying Your Session</h1>
+      <p className="text-muted-foreground">
+        Please wait while we complete your authentication...
+      </p>
+    </div>
+  );
+}
+
+export default function VerifySessionPage() {
+  return (
+    <div className="flex min-h-screen items-center justify-center">
+      <Suspense fallback={<Loader2 className="w-8 h-8 animate-spin text-muted-foreground" />}>
+        <VerifySessionContent />
+      </Suspense>
     </div>
   );
 }

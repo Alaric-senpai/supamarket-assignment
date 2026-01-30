@@ -30,6 +30,8 @@ import {
 } from '@/components/ui/sidebar';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import { AnimatedThemeToggler } from '@/components/ui/animated-theme-toggler';
+
 
 const menuItems = [
   {
@@ -148,7 +150,11 @@ export function AdminSidebar() {
         ))}
       </SidebarContent>
 
-      <SidebarFooter className="border-t p-4">
+      <SidebarFooter className="border-t p-4 space-y-2">
+        <div className="flex items-center justify-between gap-2">
+          <p className="text-xs text-muted-foreground font-medium px-2">Theme</p>
+          <AnimatedThemeToggler className="size-8 flex items-center justify-center rounded-md hover:bg-accent hover:text-accent-foreground transition-colors" />
+        </div>
         <LogoutButton />
       </SidebarFooter>
     </Sidebar>

@@ -373,3 +373,88 @@ export async function updateOrderStatus(
         throw error;
     }
 }
+
+/**
+ * Delete an order and its associated records
+ */
+export async function deleteOrder(
+    orderId: string,
+    userId: string
+): Promise<{ success: boolean; message?: string }> {
+    try {
+        const { tables } = await createAdminSession();
+
+        // 1. Fetch the order to verify ownership and status
+        const order = await tables.getRow({
+            databaseId: appwritecfg.databaseId,
+            tableId: appwritecfg.tables.orders,
+            rowId: orderId,
+        });
+
+        if (order.userId !== userId) {
+            return {
+                success: false,
+                message: 'Unauthorized: You do not own this order',
+            };
+        }
+
+        // 2. Only allow deleting PENDING, FAILED, or CANCELLED orders
+        const allowedStatuses = ['PENDING', 'FAILED', 'CANCELLED'];
+        if (!allowedStatuses.includes(order.status)) {
+            return {
+                success: false,
+                message: `Cannot delete an order with status: ${order.status}`,
+            };
+        }
+
+        // 3. Delete related order items
+        const itemsResponse = await tables.listRows({
+            databaseId: appwritecfg.databaseId,
+            tableId: appwritecfg.tables.orderItems,
+            queries: [Query.equal('orderId', orderId)],
+        });
+
+        for (const item of itemsResponse.rows) {
+            await tables.deleteRow({
+                databaseId: appwritecfg.databaseId,
+                tableId: appwritecfg.tables.orderItems,
+                rowId: item.$id,
+            });
+        }
+
+        // 4. Delete related payment records
+        const paymentResponse = await tables.listRows({
+            databaseId: appwritecfg.databaseId,
+            tableId: appwritecfg.tables.payments,
+            queries: [Query.equal('orderId', orderId)],
+        });
+
+        for (const payment of paymentResponse.rows) {
+            await tables.deleteRow({
+                databaseId: appwritecfg.databaseId,
+                tableId: appwritecfg.tables.payments,
+                rowId: payment.$id,
+            });
+        }
+
+        // 5. Delete the order itself
+        await tables.deleteRow({
+            databaseId: appwritecfg.databaseId,
+            tableId: appwritecfg.tables.orders,
+            rowId: orderId,
+        });
+
+        console.log(`Order ${orderId} and all related records deleted by user ${userId}`);
+
+        return {
+            success: true,
+            message: 'Order deleted successfully',
+        };
+    } catch (error: any) {
+        console.error(`Error deleting order ${orderId}:`, error);
+        return {
+            success: false,
+            message: error?.message || 'Failed to delete order',
+        };
+    }
+}

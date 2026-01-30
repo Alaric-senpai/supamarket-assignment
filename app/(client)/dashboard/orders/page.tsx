@@ -1,4 +1,3 @@
-'use client'
 import { getCurrentUser } from '@/actions/auth.actions';
 import { getCustomerOrders } from '@/actions/orders.actions';
 import { OrderHistory } from '@/components/customer/OrderHistory';

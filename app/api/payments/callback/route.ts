@@ -14,9 +14,25 @@ import { appwritecfg } from '@/config/appwrite.config';
 export async function POST(request: NextRequest) {
     try {
         const { tables } = await createAdminSession();
-        const body: MpesaCallbackBody = await request.json();
 
-        console.log('M-Pesa Callback received:', JSON.stringify(body, null, 2));
+        // Read raw body as text first to avoid SyntaxError on empty body
+        const rawBody = await request.text();
+
+        if (!rawBody) {
+            console.error('M-Pesa Callback Error: Empty request body');
+            return NextResponse.json({ message: 'Empty body' }, { status: 200 });
+        }
+
+        console.log('M-Pesa Callback Raw Body:', rawBody);
+
+        let body: MpesaCallbackBody;
+        try {
+            body = JSON.parse(rawBody);
+        } catch (parseError) {
+            console.error('M-Pesa Callback Error: Failed to parse JSON', parseError);
+            console.error('Malformed Body Content:', rawBody);
+            return NextResponse.json({ message: 'Invalid JSON' }, { status: 200 });
+        }
 
         const { stkCallback } = body.Body;
         const { CheckoutRequestID, ResultCode, ResultDesc, CallbackMetadata } = stkCallback;

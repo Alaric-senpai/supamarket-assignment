@@ -1,42 +1,16 @@
-'use client';
-
-import { useEffect, useState } from 'react';
-import { useSearchParams, useRouter } from 'next/navigation';
 import { getOrderById } from '@/actions/orders.actions';
 import { PaymentForm } from '@/components/customer/PaymentForm';
-import { Loader2, AlertCircle } from 'lucide-react';
+import { AlertCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
-import type { Order } from '@/lib/types';
-import { connection } from 'next/server';
 
-export default async function PaymentPage() {
-  await connection()
-  const searchParams = useSearchParams();
-  const router = useRouter();
-  const orderId = searchParams.get('orderId');
+interface PaymentPageProps {
+  searchParams: Promise<{ orderId?: string }>;
+}
+
+export default async function PaymentPage({ searchParams }: PaymentPageProps) {
+  const { orderId } = await searchParams;
   
-  const [order, setOrder] = useState<Order | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
-
-  useEffect(() => {
-    async function fetchOrder() {
-      if (!orderId) return;
-      
-      setIsLoading(true);
-      try {
-        const data = await getOrderById(orderId);
-        setOrder(data);
-      } catch (error) {
-        console.error('Error fetching order:', error);
-      } finally {
-        setIsLoading(false);
-      }
-    }
-
-    fetchOrder();
-  }, [orderId]);
-
   if (!orderId) {
     return (
       <div className="flex flex-col items-center justify-center min-h-[400px] text-center space-y-4">
@@ -50,12 +24,11 @@ export default async function PaymentPage() {
     );
   }
 
-  if (isLoading) {
-    return (
-      <div className="flex items-center justify-center min-h-[400px]">
-        <Loader2 className="size-8 animate-spin text-primary" />
-      </div>
-    );
+  let order = null;
+  try {
+    order = await getOrderById(orderId);
+  } catch (error) {
+    console.error('Error fetching order:', error);
   }
 
   if (!order) {
@@ -63,7 +36,7 @@ export default async function PaymentPage() {
       <div className="flex flex-col items-center justify-center min-h-[400px] text-center space-y-4">
         <AlertCircle className="size-12 text-destructive" />
         <h2 className="text-2xl font-bold">Order Not Found</h2>
-        <p className="text-muted-foreground">We couldn't find the order your are looking for.</p>
+        <p className="text-muted-foreground">We couldn't find the order you are looking for.</p>
         <Button asChild>
           <Link href="/dashboard">Back to Dashboard</Link>
         </Button>
@@ -73,7 +46,8 @@ export default async function PaymentPage() {
 
   return (
     <div className="space-y-6">
-      <PaymentForm order={order} />
+      <PaymentForm order={order as any} />
     </div>
   );
 }
+

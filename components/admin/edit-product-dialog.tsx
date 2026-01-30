@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
@@ -18,7 +18,7 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { toast } from 'sonner';
 import type { Product } from '@/lib/types';
-import { createProduct, updateProduct } from '@/actions/products.actions';
+import { updateProduct } from '@/actions/products.actions';
 
 const productSchema = z.object({
   name: z.string().min(1, 'Product name is required'),
@@ -28,16 +28,15 @@ const productSchema = z.object({
 
 export type ProductFormData = z.infer<typeof productSchema>;
 
-interface ProductDialogProps {
+interface EditProductDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  product?: Product | null;
+  product: Product | null;
   onSuccess: (product: Product) => void;
 }
 
-export function ProductDialog({ open, onOpenChange, product, onSuccess }: ProductDialogProps) {
+export function EditProductDialog({ open, onOpenChange, product, onSuccess }: EditProductDialogProps) {
   const [isLoading, setIsLoading] = useState(false);
-  const isEdit = !!product;
 
   const {
     register,
@@ -46,37 +45,35 @@ export function ProductDialog({ open, onOpenChange, product, onSuccess }: Produc
     reset,
   } = useForm<ProductFormData>({
     resolver: zodResolver(productSchema),
-    defaultValues: {
-      name: product?.name || '',
-      price: product?.price ? parseFloat(product.price) : 0,
-      description: product?.description || '',
-    },
   });
 
+  // Update form values when product changes
+  useEffect(() => {
+    if (product) {
+      reset({
+        name: product.name,
+        price: product.price ? parseFloat(product.price) : 0,
+        description: product.description || '',
+      });
+    }
+  }, [product, reset]);
+
   const onSubmit = async (data: ProductFormData) => {
+    if (!product) return;
+    
     setIsLoading(true);
     try {
-      let result: Product;
-      if (isEdit && product) {
-        result = await updateProduct(product.$id, {
-          name: data.name,
-          price: data.price,
-          description: data.description,
-        });
-      } else {
-        result = await createProduct({
-          name: data.name,
-          price: data.price,
-          description: data.description,
-        });
-      }
+      const result = await updateProduct(product.$id, {
+        name: data.name,
+        price: data.price,
+        description: data.description,
+      });
 
-      toast.success(`Product ${isEdit ? 'updated' : 'created'} successfully`);
+      toast.success('Product updated successfully');
 
       onSuccess(result);
-      reset();
     } catch (error) {
-      toast.error(`Failed to ${isEdit ? 'update' : 'create'} product`);
+      toast.error('Failed to update product');
     } finally {
       setIsLoading(false);
     }
@@ -86,11 +83,9 @@ export function ProductDialog({ open, onOpenChange, product, onSuccess }: Produc
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
-          <DialogTitle>{isEdit ? 'Edit Product' : 'Create New Product'}</DialogTitle>
+          <DialogTitle>Edit Product</DialogTitle>
           <DialogDescription>
-            {isEdit
-              ? 'Update product information'
-              : 'Add a new product to the catalog'}
+            Update product information for "{product?.name}"
           </DialogDescription>
         </DialogHeader>
         <form onSubmit={handleSubmit(onSubmit)}>
@@ -139,7 +134,7 @@ export function ProductDialog({ open, onOpenChange, product, onSuccess }: Produc
               Cancel
             </Button>
             <Button type="submit" disabled={isLoading}>
-              {isLoading ? 'Saving...' : isEdit ? 'Update' : 'Create'}
+              {isLoading ? 'Saving...' : 'Update'}
             </Button>
           </DialogFooter>
         </form>
